@@ -1,14 +1,58 @@
 {
   "name": "circle-of-fifths",
+  "productName": "Circle of 5ths",
   "version": "1.0.0",
-  "description": "Music production chord companion — Circle of 5ths",
+  "author": "Habad",
+  "description": "Music production chord companion for fast key, chord, and progression sketching.",
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
+    "pack": "npm run build && electron-builder --dir",
+    "dist": "npm run dist:win",
+    "dist:win": "npm run build && electron-builder --win nsis portable",
     "preview": "electron-vite preview",
     "start": "electron-vite build && electron .",
     "test": "vitest"
+  },
+  "build": {
+    "appId": "com.circleoffifths.desktop",
+    "productName": "Circle of 5ths",
+    "asar": true,
+    "directories": {
+      "output": "dist",
+      "buildResources": "resources"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "./out/main/index.js"
+    },
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   },
   "dependencies": {
     "react": "^19.0.0",
@@ -22,6 +66,7 @@
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.0",
     "electron": "^33.0.0",
+    "electron-builder": "^25.1.8",
     "electron-vite": "^5.0.0",
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
