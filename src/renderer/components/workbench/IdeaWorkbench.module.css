@@ -1,16 +1,21 @@
 .workbench {
   display: grid;
-  grid-template-rows: minmax(360px, 1fr) minmax(260px, 0.92fr);
+  grid-template-rows: minmax(360px, 1fr) minmax(260px, auto);
   gap: var(--space-lg);
   width: 100%;
   height: 100%;
   min-height: 0;
 }
 
+.workbench[data-piano-collapsed='true'] {
+  grid-template-rows: minmax(360px, 1fr);
+}
+
 .circleCard {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;
   padding: var(--space-lg);
   border-radius: calc(var(--radius-lg) + 4px);
   background:
@@ -42,9 +47,35 @@
   color: var(--text-secondary);
 }
 
+.headerActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+
+.rollToggle {
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.rollToggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
 .meta {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 6px;
 }
 
@@ -62,14 +93,130 @@
 .circleWrap {
   flex: 1;
   min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+.circleStage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.infoRail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-self: stretch;
+  justify-content: center;
+}
+
+.infoCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.infoLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.noteRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.notePill {
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(129, 140, 248, 0.12);
+  border: 1px solid rgba(129, 140, 248, 0.16);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.metricGrid {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.metricLabel {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.metricValue {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.leadTitle {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.leadReason {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.leadChords {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-accent);
+}
+
+@media (max-width: 1650px) {
+  .circleWrap {
+    grid-template-columns: 1fr;
+  }
+
+  .infoRail {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 1180px) {
   .workbench {
-    grid-template-rows: minmax(320px, 1fr) minmax(240px, 0.9fr);
+    grid-template-rows: minmax(320px, 1fr) minmax(240px, auto);
   }
 
   .cardHeader {
     flex-direction: column;
+  }
+
+  .headerActions {
+    align-items: flex-start;
+  }
+
+  .meta {
+    justify-content: flex-start;
+  }
+
+  .infoRail {
+    grid-template-columns: 1fr;
   }
 }

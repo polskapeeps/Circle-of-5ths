@@ -14,6 +14,7 @@
 
 .header {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-md);
@@ -36,6 +37,7 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 6px;
+  margin-left: auto;
 }
 
 .sequenceChord {
@@ -47,17 +49,50 @@
   font-weight: 600;
 }
 
+.scrollHint {
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(34, 211, 238, 0.08);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
 .gridWrap {
-  overflow: auto;
+  overflow-x: scroll;
+  overflow-y: auto;
   border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  scrollbar-gutter: stable both-edges;
+  overscroll-behavior-x: contain;
+  padding-bottom: 2px;
 }
 
 .grid {
+  width: max-content;
   min-width: 100%;
   display: grid;
-  grid-template-columns: 66px repeat(var(--steps), minmax(110px, 1fr));
+  grid-template-columns: 66px repeat(var(--steps), minmax(132px, 1fr));
   background: rgba(7, 10, 18, 0.6);
+}
+
+.gridWrap::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.gridWrap::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-full);
+}
+
+.gridWrap::-webkit-scrollbar-thumb {
+  background: rgba(129, 140, 248, 0.42);
+  border-radius: var(--radius-full);
+}
+
+.gridWrap::-webkit-scrollbar-thumb:hover {
+  background: rgba(129, 140, 248, 0.62);
 }
 
 .corner,
@@ -149,7 +184,12 @@
     flex-direction: column;
   }
 
+  .scrollHint {
+    order: 3;
+  }
+
   .sequence {
     justify-content: flex-start;
+    margin-left: 0;
   }
 }

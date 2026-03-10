@@ -1,3 +1,4 @@
+import { useRef, type WheelEvent } from 'react'
 import type { Chord, ResolvedChordStep } from '../../types/music'
 import styles from './PianoRoll.module.css'
 
@@ -61,9 +62,19 @@ function midiToLabel(midi: number) {
 }
 
 export function PianoRoll({ title, subtitle, steps }: PianoRollProps) {
+  const scrollRef = useRef<HTMLDivElement | null>(null)
   const events = buildEvents(steps)
   const lanes = getLaneLabels(events)
   const eventLookup = new Map(events.map((event) => [`${event.column}-${event.midi}`, event]))
+  const handleWheel = (event: WheelEvent<HTMLDivElement>) => {
+    if (!scrollRef.current) return
+
+    const horizontalIntent = event.shiftKey || Math.abs(event.deltaX) > 0
+    if (!horizontalIntent) return
+
+    event.preventDefault()
+    scrollRef.current.scrollLeft += event.deltaX !== 0 ? event.deltaX : event.deltaY
+  }
 
   return (
     <section className={styles.panel}>
@@ -72,6 +83,7 @@ export function PianoRoll({ title, subtitle, steps }: PianoRollProps) {
           <h3 className={styles.title}>{title}</h3>
           <p className={styles.subtitle}>{subtitle}</p>
         </div>
+        <span className={styles.scrollHint}>Shift + wheel scrolls long progressions</span>
         <div className={styles.sequence}>
           {steps.map((step) => (
             <span key={`${step.numeral}-${step.chord.root.name}`} className={styles.sequenceChord}>
@@ -81,7 +93,12 @@ export function PianoRoll({ title, subtitle, steps }: PianoRollProps) {
         </div>
       </div>
 
-      <div className={styles.gridWrap}>
+      <div
+        ref={scrollRef}
+        className={styles.gridWrap}
+        onWheel={handleWheel}
+        onWheelCapture={handleWheel}
+      >
         <div className={styles.grid} style={{ ['--steps' as string]: String(Math.max(steps.length, 1)) }}>
           <div className={styles.corner}>Pitch</div>
           {steps.map((step, index) => (

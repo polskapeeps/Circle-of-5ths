@@ -5,9 +5,11 @@ import { useChordStore } from '../../stores/useChordStore'
 import { useIdeaStore } from '../../stores/useIdeaStore'
 import { useKeyStore } from '../../stores/useKeyStore'
 import { useProgressionStore } from '../../stores/useProgressionStore'
-import { getProductionIdeas, getResolvedProgressions } from '../../engine/recommendationEngine'
+import { useUIStore } from '../../stores/useUIStore'
+import { getProductionIdeas, getResolvedProgressions, getScaleFormula } from '../../engine/recommendationEngine'
 import { analyzeKey } from '../../engine/keyAnalyzer'
 import { chordToString } from '../../engine/chordBuilder'
+import { sequenceToChordNames } from '../../engine/progressionResolver'
 import type { Mode, ResolvedChordStep } from '../../types/music'
 import styles from './IdeaWorkbench.module.css'
 
@@ -31,6 +33,12 @@ function getSelectedChordSteps(selectedChord: string | null, rootName: string, m
   ]
 }
 
+function getSignatureLabel(signature: number) {
+  if (signature === 0) return 'No sharps or flats'
+  if (signature > 0) return `${signature} sharp${signature > 1 ? 's' : ''}`
+  return `${Math.abs(signature)} flat${Math.abs(signature) > 1 ? 's' : ''}`
+}
+
 export function IdeaWorkbench() {
   const selectedRoot = useKeyStore((state) => state.selectedRoot)
   const selectedMode = useKeyStore((state) => state.selectedMode)
@@ -40,9 +48,21 @@ export function IdeaWorkbench() {
   const selectedGenres = useProgressionStore((state) => state.selectedGenres)
   const selectedMoods = useProgressionStore((state) => state.selectedMoods)
   const complexityRange = useProgressionStore((state) => state.complexityRange)
+  const pianoRollCollapsed = useUIStore((state) => state.pianoRollCollapsed)
+  const togglePianoRoll = useUIStore((state) => state.togglePianoRoll)
 
   const ideas = useMemo(
     () => getProductionIdeas(selectedRoot, selectedMode),
+    [selectedMode, selectedRoot]
+  )
+
+  const scaleNotes = useMemo(
+    () => getScaleFormula(selectedRoot, selectedMode),
+    [selectedMode, selectedRoot]
+  )
+
+  const keySummary = useMemo(
+    () => analyzeKey(selectedRoot, selectedMode),
     [selectedMode, selectedRoot]
   )
 
@@ -102,25 +122,79 @@ export function IdeaWorkbench() {
     }
   }, [ideas, rankedProgressions, selectedChord, selectedIdeaId, selectedMode, selectedProgressionId, selectedRoot])
 
+  const leadSuggestion = rankedProgressions[0]
+
   return (
-    <div className={styles.workbench}>
+    <div className={styles.workbench} data-piano-collapsed={pianoRollCollapsed}>
       <div className={styles.circleCard}>
         <div className={styles.cardHeader}>
           <div>
             <h2 className={styles.heading}>Key map</h2>
             <p className={styles.copy}>Click the circle to pivot keys, then tap a chord or progression to project it below.</p>
           </div>
-          <div className={styles.meta}>
-            <span className={styles.metaPill}>{selectedRoot}</span>
-            <span className={styles.metaPill}>{selectedMode}</span>
+          <div className={styles.headerActions}>
+            <button className={styles.rollToggle} onClick={togglePianoRoll}>
+              {pianoRollCollapsed ? 'Show Piano Roll' : 'Hide Piano Roll'}
+            </button>
+            <div className={styles.meta}>
+              <span className={styles.metaPill}>{selectedRoot}</span>
+              <span className={styles.metaPill}>{selectedMode}</span>
+            </div>
           </div>
         </div>
+
         <div className={styles.circleWrap}>
-          <CircleOfFifths />
+          <div className={styles.circleStage}>
+            <CircleOfFifths />
+          </div>
+
+          <aside className={styles.infoRail}>
+            <section className={styles.infoCard}>
+              <span className={styles.infoLabel}>Scale notes</span>
+              <div className={styles.noteRow}>
+                {scaleNotes.map((note) => (
+                  <span key={note.name} className={styles.notePill}>
+                    {note.name}
+                  </span>
+                ))}
+              </div>
+            </section>
+
+            <section className={styles.infoCard}>
+              <span className={styles.infoLabel}>Key profile</span>
+              <div className={styles.metricGrid}>
+                <div>
+                  <span className={styles.metricLabel}>Relative</span>
+                  <strong className={styles.metricValue}>{keySummary.relativeKey || '--'}</strong>
+                </div>
+                <div>
+                  <span className={styles.metricLabel}>Parallel</span>
+                  <strong className={styles.metricValue}>{keySummary.parallelKey || '--'}</strong>
+                </div>
+                <div>
+                  <span className={styles.metricLabel}>Signature</span>
+                  <strong className={styles.metricValue}>{getSignatureLabel(keySummary.signature)}</strong>
+                </div>
+              </div>
+            </section>
+
+            {leadSuggestion && (
+              <section className={styles.infoCard}>
+                <span className={styles.infoLabel}>Best match right now</span>
+                <strong className={styles.leadTitle}>{leadSuggestion.progression.name}</strong>
+                <span className={styles.leadReason}>{leadSuggestion.matchReasons.slice(0, 2).join(' • ')}</span>
+                <span className={styles.leadChords}>
+                  {sequenceToChordNames(leadSuggestion.chords).join(' -> ')}
+                </span>
+              </section>
+            )}
+          </aside>
         </div>
       </div>
 
-      <PianoRoll title={preview.title} subtitle={preview.subtitle} steps={preview.steps} />
+      {!pianoRollCollapsed && (
+        <PianoRoll title={preview.title} subtitle={preview.subtitle} steps={preview.steps} />
+      )}
     </div>
   )
 }

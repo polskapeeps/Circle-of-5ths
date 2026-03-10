@@ -11,11 +11,15 @@ interface AppShellProps {
 export function AppShell({ sidebar, center, panel }: AppShellProps) {
   const sidebarCollapsed = useUIStore((s) => s.sidebarCollapsed)
   const panelCollapsed = useUIStore((s) => s.panelCollapsed)
+  const togglePanel = useUIStore((s) => s.togglePanel)
 
   return (
     <div className={styles.shell}>
       <div className={styles.titlebar}>
         <span className={styles.titleText}>Circle of Fifths</span>
+        <button className={styles.titleAction} onClick={togglePanel}>
+          {panelCollapsed ? 'Show Browser' : 'Hide Browser'}
+        </button>
       </div>
       <div
         className={clsx(

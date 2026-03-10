@@ -61,7 +61,7 @@ export function CircleSegment({
         textAnchor="middle"
         dominantBaseline="central"
         style={{
-          fontSize: isSelected ? '14px' : '12px',
+          fontSize: isSelected ? 'clamp(16px, 1.15vw, 19px)' : 'clamp(13px, 0.95vw, 16px)',
           fontWeight: isSelected ? 700 : 600,
           opacity: isSelected || isHovered || isRelated ? 1 : 0.7,
         }}

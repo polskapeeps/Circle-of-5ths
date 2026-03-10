@@ -34,7 +34,7 @@ export function CircleCenter({ keyName, mode, signature, cx, cy, radius }: Circl
           transition={{ duration: 0.2 }}
         >
           <text
-            x={cx} y={cy - 14}
+            x={cx} y={cy - 18}
             className={styles.keyName}
             textAnchor="middle"
             dominantBaseline="central"
@@ -42,7 +42,7 @@ export function CircleCenter({ keyName, mode, signature, cx, cy, radius }: Circl
             {keyName}
           </text>
           <text
-            x={cx} y={cy + 10}
+            x={cx} y={cy + 12}
             className={styles.modeName}
             textAnchor="middle"
             dominantBaseline="central"
@@ -50,7 +50,7 @@ export function CircleCenter({ keyName, mode, signature, cx, cy, radius }: Circl
             {mode}
           </text>
           <text
-            x={cx} y={cy + 28}
+            x={cx} y={cy + 34}
             className={styles.signature}
             textAnchor="middle"
             dominantBaseline="central"
