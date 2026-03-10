@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { CircleOfFifths } from '../circle/CircleOfFifths'
 import { PianoRoll } from '../piano/PianoRoll'
 import { useChordStore } from '../../stores/useChordStore'
@@ -39,6 +39,10 @@ function getSignatureLabel(signature: number) {
   return `${Math.abs(signature)} flat${Math.abs(signature) > 1 ? 's' : ''}`
 }
 
+const MIN_PIANO_HEIGHT = 160
+const MAX_PIANO_HEIGHT = 600
+const DEFAULT_PIANO_HEIGHT = 300
+
 export function IdeaWorkbench() {
   const selectedRoot = useKeyStore((state) => state.selectedRoot)
   const selectedMode = useKeyStore((state) => state.selectedMode)
@@ -50,6 +54,34 @@ export function IdeaWorkbench() {
   const complexityRange = useProgressionStore((state) => state.complexityRange)
   const pianoRollCollapsed = useUIStore((state) => state.pianoRollCollapsed)
   const togglePianoRoll = useUIStore((state) => state.togglePianoRoll)
+
+  const [pianoHeight, setPianoHeight] = useState(DEFAULT_PIANO_HEIGHT)
+  const dragRef = useRef<{ startY: number; startHeight: number } | null>(null)
+
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    dragRef.current = { startY: e.clientY, startHeight: pianoHeight }
+
+    const handleMove = (ev: MouseEvent) => {
+      if (!dragRef.current) return
+      const delta = dragRef.current.startY - ev.clientY
+      const next = Math.min(MAX_PIANO_HEIGHT, Math.max(MIN_PIANO_HEIGHT, dragRef.current.startHeight + delta))
+      setPianoHeight(next)
+    }
+
+    const handleUp = () => {
+      dragRef.current = null
+      document.removeEventListener('mousemove', handleMove)
+      document.removeEventListener('mouseup', handleUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+
+    document.body.style.cursor = 'ns-resize'
+    document.body.style.userSelect = 'none'
+    document.addEventListener('mousemove', handleMove)
+    document.addEventListener('mouseup', handleUp)
+  }, [pianoHeight])
 
   const ideas = useMemo(
     () => getProductionIdeas(selectedRoot, selectedMode),
@@ -193,7 +225,12 @@ export function IdeaWorkbench() {
       </div>
 
       {!pianoRollCollapsed && (
-        <PianoRoll title={preview.title} subtitle={preview.subtitle} steps={preview.steps} />
+        <div className={styles.pianoSection} style={{ height: pianoHeight }}>
+          <div className={styles.resizeHandle} onMouseDown={handleResizeStart}>
+            <div className={styles.resizeHandleBar} />
+          </div>
+          <PianoRoll title={preview.title} subtitle={preview.subtitle} steps={preview.steps} />
+        </div>
       )}
     </div>
   )

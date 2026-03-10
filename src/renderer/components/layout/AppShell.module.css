@@ -93,11 +93,12 @@
 
 .center {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   overflow: hidden;
   position: relative;
   padding: var(--space-lg);
+  min-width: 0;
 }
 
 @media (max-width: 1200px) {

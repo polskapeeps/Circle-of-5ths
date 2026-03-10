@@ -1,4 +1,4 @@
-import { useRef, type WheelEvent } from 'react'
+import { useCallback, useRef, type WheelEvent } from 'react'
 import type { Chord, ResolvedChordStep } from '../../types/music'
 import styles from './PianoRoll.module.css'
 
@@ -66,15 +66,20 @@ export function PianoRoll({ title, subtitle, steps }: PianoRollProps) {
   const events = buildEvents(steps)
   const lanes = getLaneLabels(events)
   const eventLookup = new Map(events.map((event) => [`${event.column}-${event.midi}`, event]))
-  const handleWheel = (event: WheelEvent<HTMLDivElement>) => {
-    if (!scrollRef.current) return
 
-    const horizontalIntent = event.shiftKey || Math.abs(event.deltaX) > 0
-    if (!horizontalIntent) return
+  const handleWheel = useCallback((event: WheelEvent<HTMLDivElement>) => {
+    const el = scrollRef.current
+    if (!el) return
 
-    event.preventDefault()
-    scrollRef.current.scrollLeft += event.deltaX !== 0 ? event.deltaX : event.deltaY
-  }
+    // Shift+wheel or native horizontal scroll -> scroll horizontally
+    if (event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+      event.preventDefault()
+      event.stopPropagation()
+      const delta = event.deltaX !== 0 ? event.deltaX : event.deltaY
+      el.scrollLeft += delta
+    }
+    // Normal wheel -> vertical scroll (let browser handle it naturally)
+  }, [])
 
   return (
     <section className={styles.panel}>
@@ -83,10 +88,10 @@ export function PianoRoll({ title, subtitle, steps }: PianoRollProps) {
           <h3 className={styles.title}>{title}</h3>
           <p className={styles.subtitle}>{subtitle}</p>
         </div>
-        <span className={styles.scrollHint}>Shift + wheel scrolls long progressions</span>
+        <span className={styles.scrollHint}>Shift + scroll to pan</span>
         <div className={styles.sequence}>
-          {steps.map((step) => (
-            <span key={`${step.numeral}-${step.chord.root.name}`} className={styles.sequenceChord}>
+          {steps.map((step, i) => (
+            <span key={`${step.numeral}-${i}`} className={styles.sequenceChord}>
               {getChordName(step.chord)}
             </span>
           ))}
@@ -97,7 +102,6 @@ export function PianoRoll({ title, subtitle, steps }: PianoRollProps) {
         ref={scrollRef}
         className={styles.gridWrap}
         onWheel={handleWheel}
-        onWheelCapture={handleWheel}
       >
         <div className={styles.grid} style={{ ['--steps' as string]: String(Math.max(steps.length, 1)) }}>
           <div className={styles.corner}>Pitch</div>
