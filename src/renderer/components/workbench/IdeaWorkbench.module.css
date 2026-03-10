@@ -8,6 +8,10 @@
   overflow: hidden;
 }
 
+.workbench[data-focus-mode='true'] {
+  gap: 0;
+}
+
 .circleCard {
   flex: 1;
   display: flex;
@@ -53,6 +57,13 @@
   gap: var(--space-sm);
 }
 
+.actionStack {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .rollToggle {
   padding: 8px 12px;
   border-radius: var(--radius-full);
@@ -69,6 +80,24 @@
 .rollToggle:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.14);
+}
+
+.focusToggle {
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(129, 140, 248, 0.12);
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.focusToggle:hover {
+  background: rgba(129, 140, 248, 0.18);
+  border-color: rgba(129, 140, 248, 0.3);
 }
 
 .meta {
@@ -198,6 +227,11 @@
   overflow: hidden;
 }
 
+.pianoSection[data-focus-mode='true'] {
+  flex: 1;
+  min-height: 0;
+}
+
 .resizeHandle {
   display: flex;
   align-items: center;
@@ -249,6 +283,10 @@
 
   .headerActions {
     align-items: flex-start;
+  }
+
+  .actionStack {
+    justify-content: flex-start;
   }
 
   .meta {

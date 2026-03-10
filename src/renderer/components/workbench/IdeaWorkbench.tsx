@@ -54,7 +54,9 @@ export function IdeaWorkbench() {
   const selectedNotes = useProgressionStore((state) => state.selectedNotes)
   const complexityRange = useProgressionStore((state) => state.complexityRange)
   const pianoRollCollapsed = useUIStore((state) => state.pianoRollCollapsed)
+  const pianoRollFocusMode = useUIStore((state) => state.pianoRollFocusMode)
   const togglePianoRoll = useUIStore((state) => state.togglePianoRoll)
+  const togglePianoRollFocusMode = useUIStore((state) => state.togglePianoRollFocusMode)
 
   const [pianoHeight, setPianoHeight] = useState(DEFAULT_PIANO_HEIGHT)
   const dragRef = useRef<{ startY: number; startHeight: number } | null>(null)
@@ -159,17 +161,29 @@ export function IdeaWorkbench() {
   const leadSuggestion = rankedProgressions[0]
 
   return (
-    <div className={styles.workbench} data-piano-collapsed={pianoRollCollapsed}>
-      <div className={styles.circleCard}>
+    <div
+      className={styles.workbench}
+      data-piano-collapsed={pianoRollCollapsed}
+      data-focus-mode={pianoRollFocusMode}
+    >
+      {!pianoRollFocusMode && (
+        <div className={styles.circleCard}>
         <div className={styles.cardHeader}>
           <div>
             <h2 className={styles.heading}>Key map</h2>
             <p className={styles.copy}>Click the circle to pivot keys, then tap a chord or progression to project it below.</p>
           </div>
           <div className={styles.headerActions}>
-            <button className={styles.rollToggle} onClick={togglePianoRoll}>
-              {pianoRollCollapsed ? 'Show Piano Roll' : 'Hide Piano Roll'}
-            </button>
+            <div className={styles.actionStack}>
+              <button className={styles.rollToggle} onClick={togglePianoRoll}>
+                {pianoRollCollapsed ? 'Show Piano Roll' : 'Hide Piano Roll'}
+              </button>
+              {!pianoRollCollapsed && (
+                <button className={styles.focusToggle} onClick={togglePianoRollFocusMode}>
+                  Maximize Piano Roll
+                </button>
+              )}
+            </div>
             <div className={styles.meta}>
               <span className={styles.metaPill}>{selectedRoot}</span>
               <span className={styles.metaPill}>{selectedMode}</span>
@@ -225,13 +239,26 @@ export function IdeaWorkbench() {
           </aside>
         </div>
       </div>
+      )}
 
       {!pianoRollCollapsed && (
-        <div className={styles.pianoSection} style={{ height: pianoHeight }}>
-          <div className={styles.resizeHandle} onMouseDown={handleResizeStart}>
-            <div className={styles.resizeHandleBar} />
-          </div>
-          <PianoRoll title={preview.title} subtitle={preview.subtitle} steps={preview.steps} />
+        <div
+          className={styles.pianoSection}
+          data-focus-mode={pianoRollFocusMode}
+          style={pianoRollFocusMode ? undefined : { height: pianoHeight }}
+        >
+          {!pianoRollFocusMode && (
+            <div className={styles.resizeHandle} onMouseDown={handleResizeStart}>
+              <div className={styles.resizeHandleBar} />
+            </div>
+          )}
+          <PianoRoll
+            title={preview.title}
+            subtitle={preview.subtitle}
+            steps={preview.steps}
+            focusMode={pianoRollFocusMode}
+            onToggleFocusMode={togglePianoRollFocusMode}
+          />
         </div>
       )}
     </div>

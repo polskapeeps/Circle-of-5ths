@@ -6,6 +6,8 @@ interface PianoRollProps {
   title: string
   subtitle: string
   steps: ResolvedChordStep[]
+  focusMode?: boolean
+  onToggleFocusMode?: () => void
 }
 
 interface PianoEvent {
@@ -61,7 +63,13 @@ function midiToLabel(midi: number) {
   return `${names[midi % 12]}${octave}`
 }
 
-export function PianoRoll({ title, subtitle, steps }: PianoRollProps) {
+export function PianoRoll({
+  title,
+  subtitle,
+  steps,
+  focusMode = false,
+  onToggleFocusMode,
+}: PianoRollProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const events = buildEvents(steps)
   const lanes = getLaneLabels(events)
@@ -88,7 +96,14 @@ export function PianoRoll({ title, subtitle, steps }: PianoRollProps) {
           <h3 className={styles.title}>{title}</h3>
           <p className={styles.subtitle}>{subtitle}</p>
         </div>
-        <span className={styles.scrollHint}>Shift + scroll to pan</span>
+        <div className={styles.headerTools}>
+          {onToggleFocusMode && (
+            <button className={styles.focusToggle} onClick={onToggleFocusMode}>
+              {focusMode ? 'Exit Focus' : 'Focus Piano Roll'}
+            </button>
+          )}
+          <span className={styles.scrollHint}>Shift + scroll to pan</span>
+        </div>
         <div className={styles.sequence}>
           {steps.map((step, i) => (
             <span key={`${step.numeral}-${i}`} className={styles.sequenceChord}>

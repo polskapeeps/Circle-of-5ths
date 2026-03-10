@@ -24,6 +24,13 @@
   flex-shrink: 0;
 }
 
+.headerTools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
 .title {
   font-size: 14px;
   font-weight: 700;
@@ -42,7 +49,6 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 4px;
-  margin-left: auto;
 }
 
 .sequenceChord {
@@ -63,6 +69,24 @@
   font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.focusToggle {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.focusToggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 .gridWrap {
@@ -203,12 +227,15 @@
     flex-direction: column;
   }
 
+  .headerTools {
+    margin-left: 0;
+  }
+
   .scrollHint {
     order: 3;
   }
 
   .sequence {
     justify-content: flex-start;
-    margin-left: 0;
   }
 }
