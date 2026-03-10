@@ -1,0 +1,126 @@
+import { useMemo } from 'react'
+import { CircleOfFifths } from '../circle/CircleOfFifths'
+import { PianoRoll } from '../piano/PianoRoll'
+import { useChordStore } from '../../stores/useChordStore'
+import { useIdeaStore } from '../../stores/useIdeaStore'
+import { useKeyStore } from '../../stores/useKeyStore'
+import { useProgressionStore } from '../../stores/useProgressionStore'
+import { getProductionIdeas, getResolvedProgressions } from '../../engine/recommendationEngine'
+import { analyzeKey } from '../../engine/keyAnalyzer'
+import { chordToString } from '../../engine/chordBuilder'
+import type { Mode, ResolvedChordStep } from '../../types/music'
+import styles from './IdeaWorkbench.module.css'
+
+function getSelectedChordSteps(selectedChord: string | null, rootName: string, mode: Mode): ResolvedChordStep[] | null {
+  if (!selectedChord) return null
+
+  const key = analyzeKey(rootName, mode)
+  const match = key.diatonicChords
+    .flatMap((entry) => [entry.chord, entry.seventh].filter(Boolean))
+    .find((chord) => chord && chordToString(chord) === selectedChord)
+
+  if (!match) return null
+
+  return [
+    {
+      numeral: match.romanNumeral ?? 'Chord',
+      chord: match,
+      role: 'diatonic',
+      durationBeats: 4,
+    },
+  ]
+}
+
+export function IdeaWorkbench() {
+  const selectedRoot = useKeyStore((state) => state.selectedRoot)
+  const selectedMode = useKeyStore((state) => state.selectedMode)
+  const selectedChord = useChordStore((state) => state.selectedChord)
+  const selectedIdeaId = useIdeaStore((state) => state.selectedIdeaId)
+  const selectedProgressionId = useProgressionStore((state) => state.selectedProgressionId)
+  const selectedGenres = useProgressionStore((state) => state.selectedGenres)
+  const selectedMoods = useProgressionStore((state) => state.selectedMoods)
+  const complexityRange = useProgressionStore((state) => state.complexityRange)
+
+  const ideas = useMemo(
+    () => getProductionIdeas(selectedRoot, selectedMode),
+    [selectedMode, selectedRoot]
+  )
+
+  const rankedProgressions = useMemo(
+    () =>
+      getResolvedProgressions(selectedRoot, selectedMode, {
+        genres: selectedGenres,
+        moods: selectedMoods,
+        complexityRange,
+      }),
+    [complexityRange, selectedGenres, selectedMoods, selectedMode, selectedRoot]
+  )
+
+  const preview = useMemo(() => {
+    const selectedIdea = ideas.find((idea) => idea.id === selectedIdeaId)
+    if (selectedIdea) {
+      return {
+        title: selectedIdea.title,
+        subtitle: selectedIdea.summary,
+        steps: selectedIdea.chords,
+      }
+    }
+
+    const selectedProgression = rankedProgressions.find(
+      (progression) => progression.progression.id === selectedProgressionId
+    )
+    if (selectedProgression) {
+      return {
+        title: selectedProgression.progression.name,
+        subtitle: selectedProgression.matchReasons.join(' • '),
+        steps: selectedProgression.chords,
+      }
+    }
+
+    const selectedChordSteps = getSelectedChordSteps(selectedChord, selectedRoot, selectedMode)
+    if (selectedChordSteps) {
+      return {
+        title: 'Selected chord',
+        subtitle: 'Single-shot voicing preview for the current key center.',
+        steps: selectedChordSteps,
+      }
+    }
+
+    const fallback = rankedProgressions[0]
+    if (fallback) {
+      return {
+        title: fallback.progression.name,
+        subtitle: fallback.matchReasons.join(' • '),
+        steps: fallback.chords,
+      }
+    }
+
+    return {
+      title: `${selectedRoot} ${selectedMode}`,
+      subtitle: 'Choose a chord or progression to preview the voicing grid.',
+      steps: [],
+    }
+  }, [ideas, rankedProgressions, selectedChord, selectedIdeaId, selectedMode, selectedProgressionId, selectedRoot])
+
+  return (
+    <div className={styles.workbench}>
+      <div className={styles.circleCard}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h2 className={styles.heading}>Key map</h2>
+            <p className={styles.copy}>Click the circle to pivot keys, then tap a chord or progression to project it below.</p>
+          </div>
+          <div className={styles.meta}>
+            <span className={styles.metaPill}>{selectedRoot}</span>
+            <span className={styles.metaPill}>{selectedMode}</span>
+          </div>
+        </div>
+        <div className={styles.circleWrap}>
+          <CircleOfFifths />
+        </div>
+      </div>
+
+      <PianoRoll title={preview.title} subtitle={preview.subtitle} steps={preview.steps} />
+    </div>
+  )
+}

@@ -3,6 +3,8 @@ import { clsx } from 'clsx'
 import type { Chord } from '../../types/music'
 import { chordToString } from '../../engine/chordBuilder'
 import { useChordStore } from '../../stores/useChordStore'
+import { useIdeaStore } from '../../stores/useIdeaStore'
+import { useProgressionStore } from '../../stores/useProgressionStore'
 import styles from './ChordCard.module.css'
 
 interface ChordCardProps {
@@ -22,6 +24,8 @@ export function ChordCard({ chord, seventh, showSeventh = true }: ChordCardProps
   const selectedChord = useChordStore((s) => s.selectedChord)
   const setHoveredChord = useChordStore((s) => s.setHoveredChord)
   const setSelectedChord = useChordStore((s) => s.setSelectedChord)
+  const setSelectedIdea = useIdeaStore((s) => s.setSelectedIdea)
+  const setSelectedProgression = useProgressionStore((s) => s.setSelectedProgression)
 
   const displayChord = showSeventh && seventh ? seventh : chord
   const chordId = chordToString(displayChord)
@@ -34,7 +38,11 @@ export function ChordCard({ chord, seventh, showSeventh = true }: ChordCardProps
       className={clsx(styles.card, isSelected && styles.selected)}
       onHoverStart={() => setHoveredChord(chordId)}
       onHoverEnd={() => setHoveredChord(null)}
-      onClick={() => setSelectedChord(isSelected ? null : chordId)}
+      onClick={() => {
+        setSelectedIdea(null)
+        setSelectedProgression(null)
+        setSelectedChord(isSelected ? null : chordId)
+      }}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       layout

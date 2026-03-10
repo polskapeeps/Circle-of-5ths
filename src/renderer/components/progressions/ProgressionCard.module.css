@@ -67,10 +67,31 @@
   font-size: 11px;
 }
 
+.realized {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
 .tags {
   display: flex;
   gap: var(--space-xs);
   flex-wrap: wrap;
+}
+
+.reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reason {
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(34, 211, 238, 0.08);
+  color: var(--text-secondary);
+  font-size: 10px;
 }
 
 .examples {

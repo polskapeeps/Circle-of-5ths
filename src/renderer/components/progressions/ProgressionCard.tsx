@@ -1,16 +1,19 @@
 import { motion } from 'motion/react'
 import { clsx } from 'clsx'
-import type { Progression } from '../../types/music'
+import type { ResolvedProgression } from '../../types/music'
 import { Badge } from '../shared/Badge'
+import { sequenceToChordNames } from '../../engine/progressionResolver'
 import styles from './ProgressionCard.module.css'
 
 interface ProgressionCardProps {
-  progression: Progression
+  progression: ResolvedProgression
   isSelected: boolean
   onClick: () => void
 }
 
 export function ProgressionCard({ progression, isSelected, onClick }: ProgressionCardProps) {
+  const chordNames = sequenceToChordNames(progression.chords)
+
   return (
     <motion.div
       className={clsx(styles.card, isSelected && styles.selected)}
@@ -20,38 +23,55 @@ export function ProgressionCard({ progression, isSelected, onClick }: Progressio
       layout
     >
       <div className={styles.header}>
-        <span className={styles.name}>{progression.name}</span>
+        <span className={styles.name}>{progression.progression.name}</span>
         <div className={styles.complexity}>
-          {Array.from({ length: 5 }, (_, i) => (
+          {Array.from({ length: 5 }, (_, index) => (
             <span
-              key={i}
-              className={clsx(styles.dot, i < progression.complexity && styles.dotFilled)}
+              key={index}
+              className={clsx(
+                styles.dot,
+                index < progression.progression.complexity && styles.dotFilled
+              )}
             />
           ))}
         </div>
       </div>
 
       <div className={styles.numerals}>
-        {progression.numerals.map((n, i) => (
-          <span key={i} className={styles.numeral}>
-            {n}
-            {i < progression.numerals.length - 1 && (
-              <span className={styles.arrow}> → </span>
+        {progression.progression.numerals.map((numeral, index) => (
+          <span key={`${numeral}-${index}`} className={styles.numeral}>
+            {numeral}
+            {index < progression.progression.numerals.length - 1 && (
+              <span className={styles.arrow}>{' -> '}</span>
             )}
           </span>
         ))}
       </div>
 
+      <div className={styles.realized}>
+        {chordNames.join(' -> ')}
+      </div>
+
       <div className={styles.tags}>
-        {progression.genre.slice(0, 3).map((g) => (
-          <Badge key={g} label={g} />
+        {progression.progression.genre.slice(0, 3).map((genre) => (
+          <Badge key={genre} label={genre} />
         ))}
       </div>
 
-      {progression.famousExamples && progression.famousExamples.length > 0 && (
+      <div className={styles.reasons}>
+        {progression.matchReasons.slice(0, 2).map((reason) => (
+          <span key={reason} className={styles.reason}>
+            {reason}
+          </span>
+        ))}
+      </div>
+
+      {progression.progression.famousExamples && progression.progression.famousExamples.length > 0 && (
         <div className={styles.examples}>
-          {progression.famousExamples.slice(0, 2).map((ex) => (
-            <span key={ex} className={styles.example}>♪ {ex}</span>
+          {progression.progression.famousExamples.slice(0, 2).map((example) => (
+            <span key={example} className={styles.example}>
+              Song ref: {example}
+            </span>
           ))}
         </div>
       )}

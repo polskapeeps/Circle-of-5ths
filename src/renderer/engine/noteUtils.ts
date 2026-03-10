@@ -2,7 +2,7 @@ import { NOTE_NAMES, FLAT_NAMES, noteToPitchClass, makeNote } from '../data/note
 import type { Note, PitchClass } from '../types/music'
 
 // Preferred spelling for keys that use flats
-const FLAT_KEYS = new Set(['F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Dm', 'Gm', 'Cm', 'Fm', 'Bbm', 'Ebm'])
+export const FLAT_KEYS = new Set(['F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Dm', 'Gm', 'Cm', 'Fm', 'Bbm', 'Ebm'])
 
 export function transposeNote(note: Note, semitones: number): Note {
   const newPitchClass = ((note.pitchClass + semitones) % 12 + 12) % 12 as PitchClass
@@ -27,4 +27,19 @@ export function getNoteName(pitchClass: PitchClass, useFlats: boolean): string {
 
 export function pitchClassDistance(from: PitchClass, to: PitchClass): number {
   return ((to - from) % 12 + 12) % 12
+}
+
+export function keyPrefersFlats(rootName: string, mode?: string): boolean {
+  return FLAT_KEYS.has(mode === 'minor' ? `${rootName}m` : rootName)
+}
+
+export function getPitchClassName(
+  pitchClass: PitchClass,
+  preference: 'flat' | 'sharp' | 'key' = 'key',
+  keyRoot = 'C',
+  mode: string = 'major'
+): string {
+  if (preference === 'flat') return FLAT_NAMES[pitchClass]
+  if (preference === 'sharp') return NOTE_NAMES[pitchClass]
+  return keyPrefersFlats(keyRoot, mode) ? FLAT_NAMES[pitchClass] : NOTE_NAMES[pitchClass]
 }

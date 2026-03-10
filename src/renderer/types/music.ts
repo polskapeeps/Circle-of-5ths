@@ -93,3 +93,30 @@ export interface Voicing {
   style: 'jazz' | 'pop' | 'classical' | 'neo-soul' | 'gospel'
   hand: 'left' | 'right' | 'both'
 }
+
+export type SequenceRole = 'diatonic' | 'borrowed' | 'secondary' | 'chromatic'
+
+export interface ResolvedChordStep {
+  numeral: string
+  chord: Chord
+  role: SequenceRole
+  durationBeats: number
+}
+
+export interface ResolvedProgression {
+  progression: Progression
+  keyName: string
+  chords: ResolvedChordStep[]
+  score: number
+  matchReasons: string[]
+}
+
+export interface ProductionIdea {
+  id: string
+  title: string
+  category: 'palette' | 'cadence' | 'movement'
+  summary: string
+  numerals: string[]
+  tags: string[]
+  chords: ResolvedChordStep[]
+}
