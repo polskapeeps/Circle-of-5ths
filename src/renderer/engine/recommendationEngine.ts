@@ -2,6 +2,7 @@ import { PROGRESSIONS } from '../data/progressions'
 import { resolveChordStep, resolveProgression, progressionTension } from './progressionResolver'
 import { getScaleNotes } from './noteUtils'
 import { SCALE_INTERVALS } from '../data/scales'
+import { noteToPitchClass } from '../data/notes'
 import type {
   Genre,
   Mode,
@@ -14,6 +15,7 @@ import type {
 interface ProgressionFilters {
   genres?: Genre[]
   moods?: Mood[]
+  selectedNotes?: string[]
   complexityRange?: [number, number]
 }
 
@@ -25,7 +27,10 @@ function scoreProgression(
   progression: Progression,
   mode: Mode,
   genres: Genre[],
-  moods: Mood[]
+  moods: Mood[],
+  selectedNotes: string[],
+  matchedNotes: string[],
+  isFullyDiatonic: boolean
 ): { score: number; reasons: string[] } {
   let score = 0
   const reasons: string[] = []
@@ -62,7 +67,26 @@ function scoreProgression(
     reasons.push('Adds richer movement')
   }
 
+  if (selectedNotes.length > 0 && matchedNotes.length > 0) {
+    score += matchedNotes.length * 18
+    reasons.push(`Carries ${matchedNotes.join(', ')}`)
+  }
+
+  if (isFullyDiatonic) {
+    score += 8
+    reasons.push('Stays inside the scale')
+  } else {
+    score += 2
+    reasons.push('Uses borrowed color')
+  }
+
   return { score, reasons }
+}
+
+function getProgressionPitchClasses(progression: ResolvedProgression) {
+  return new Set(
+    progression.chords.flatMap((step) => step.chord.notes.map((note) => note.pitchClass))
+  )
 }
 
 export function getResolvedProgressions(
@@ -72,25 +96,55 @@ export function getResolvedProgressions(
 ): ResolvedProgression[] {
   const genres = filters.genres ?? []
   const moods = filters.moods ?? []
+  const selectedNotes = filters.selectedNotes ?? []
   const range = filters.complexityRange ?? [1, 5]
+  const scalePitchClasses = new Set(getScaleFormula(rootName, mode).map((note) => note.pitchClass))
 
   return PROGRESSIONS
-    .filter((progression) => {
+    .map((progression) => {
       if (genres.length > 0 && !progression.genre.some((genre) => genres.includes(genre))) return false
       if (moods.length > 0 && !progression.mood.some((mood) => moods.includes(mood))) return false
-      return progression.complexity >= range[0] && progression.complexity <= range[1]
-    })
-    .map((progression) => {
+      if (progression.complexity < range[0] || progression.complexity > range[1]) return false
+
       const resolved = resolveProgression(rootName, mode, progression)
-      const { score, reasons } = scoreProgression(progression, mode, genres, moods)
+      const progressionPitchClasses = getProgressionPitchClasses(resolved)
+      const matchedNotes = selectedNotes.filter((note) => progressionPitchClasses.has(noteToPitchClass(note)))
+      const missingNotes = selectedNotes.filter((note) => !progressionPitchClasses.has(noteToPitchClass(note)))
+
+      if (selectedNotes.length > 0 && missingNotes.length > 0) return false
+
+      const inScaleChordTones = [...progressionPitchClasses].filter((pitchClass) => scalePitchClasses.has(pitchClass)).length
+      const totalChordTones = progressionPitchClasses.size
+      const isFullyDiatonic = totalChordTones > 0 && inScaleChordTones === totalChordTones
+      const { score, reasons } = scoreProgression(
+        progression,
+        mode,
+        genres,
+        moods,
+        selectedNotes,
+        matchedNotes,
+        isFullyDiatonic
+      )
       const tension = progressionTension(resolved.chords)
 
       return {
         ...resolved,
         score: score + tension,
         matchReasons: [...reasons, tension >= 8 ? 'Harmonic spice' : 'Balanced motion'],
+        noteCoverage: {
+          selected: selectedNotes,
+          matched: matchedNotes,
+          missing: missingNotes,
+        },
+        scaleFit: {
+          inScaleChordTones,
+          totalChordTones,
+          ratio: totalChordTones === 0 ? 0 : inScaleChordTones / totalChordTones,
+          isFullyDiatonic,
+        },
       }
     })
+    .filter((progression): progression is ResolvedProgression => progression !== false)
     .sort((left, right) => right.score - left.score)
 }
 

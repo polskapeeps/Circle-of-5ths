@@ -18,7 +18,7 @@ export function AppShell({ sidebar, center, panel }: AppShellProps) {
       <div className={styles.titlebar}>
         <span className={styles.titleText}>Circle of Fifths</span>
         <button className={styles.titleAction} onClick={togglePanel}>
-          {panelCollapsed ? 'Show Browser' : 'Hide Browser'}
+          {panelCollapsed ? 'Show Progressions' : 'Hide Progressions'}
         </button>
       </div>
       <div

@@ -185,6 +185,17 @@ export function resolveProgression(rootName: string, mode: Mode, progression: Pr
     chords: progression.numerals.map((numeral) => resolveChordStep(rootName, mode, numeral)),
     score: 0,
     matchReasons: [],
+    noteCoverage: {
+      selected: [],
+      matched: [],
+      missing: [],
+    },
+    scaleFit: {
+      inScaleChordTones: 0,
+      totalChordTones: 0,
+      ratio: 0,
+      isFullyDiatonic: false,
+    },
   }
 }
 

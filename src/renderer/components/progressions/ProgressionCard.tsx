@@ -13,6 +13,11 @@ interface ProgressionCardProps {
 
 export function ProgressionCard({ progression, isSelected, onClick }: ProgressionCardProps) {
   const chordNames = sequenceToChordNames(progression.chords)
+  const noteMatchLabel = progression.noteCoverage.matched.length > 0
+    ? `Matches ${progression.noteCoverage.matched.join(', ')}`
+    : progression.scaleFit.isFullyDiatonic
+      ? 'Fully diatonic'
+      : `${progression.scaleFit.inScaleChordTones}/${progression.scaleFit.totalChordTones} chord tones in key`
 
   return (
     <motion.div
@@ -50,6 +55,13 @@ export function ProgressionCard({ progression, isSelected, onClick }: Progressio
 
       <div className={styles.realized}>
         {chordNames.join(' -> ')}
+      </div>
+
+      <div className={styles.metaRow}>
+        <span className={styles.metaTag}>{noteMatchLabel}</span>
+        <span className={styles.metaTag}>
+          {progression.scaleFit.isFullyDiatonic ? 'No borrowed tones' : 'Borrowed tones included'}
+        </span>
       </div>
 
       <div className={styles.tags}>

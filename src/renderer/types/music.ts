@@ -109,6 +109,17 @@ export interface ResolvedProgression {
   chords: ResolvedChordStep[]
   score: number
   matchReasons: string[]
+  noteCoverage: {
+    selected: string[]
+    matched: string[]
+    missing: string[]
+  }
+  scaleFit: {
+    inScaleChordTones: number
+    totalChordTones: number
+    ratio: number
+    isFullyDiatonic: boolean
+  }
 }
 
 export interface ProductionIdea {

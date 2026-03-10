@@ -51,6 +51,7 @@ export function IdeaWorkbench() {
   const selectedProgressionId = useProgressionStore((state) => state.selectedProgressionId)
   const selectedGenres = useProgressionStore((state) => state.selectedGenres)
   const selectedMoods = useProgressionStore((state) => state.selectedMoods)
+  const selectedNotes = useProgressionStore((state) => state.selectedNotes)
   const complexityRange = useProgressionStore((state) => state.complexityRange)
   const pianoRollCollapsed = useUIStore((state) => state.pianoRollCollapsed)
   const togglePianoRoll = useUIStore((state) => state.togglePianoRoll)
@@ -103,9 +104,10 @@ export function IdeaWorkbench() {
       getResolvedProgressions(selectedRoot, selectedMode, {
         genres: selectedGenres,
         moods: selectedMoods,
+        selectedNotes,
         complexityRange,
       }),
-    [complexityRange, selectedGenres, selectedMoods, selectedMode, selectedRoot]
+    [complexityRange, selectedGenres, selectedMoods, selectedMode, selectedNotes, selectedRoot]
   )
 
   const preview = useMemo(() => {
