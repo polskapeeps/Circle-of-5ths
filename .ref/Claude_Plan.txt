@@ -1,0 +1,120 @@
+Ready for review
+Select text to add comments on the plan
+Circle of 5ths - Music Production Companion App
+Context
+Build a visually stunning local desktop app that helps music producers quickly explore chords and chord progressions based on the Circle of 5ths. The user selects a root note on an interactive circle, and the app reveals diatonic chords, related keys, advanced extensions, and genre-tagged progressions -- all at a glance, no audio needed initially.
+
+Tech Stack
+Electron + React 19 + TypeScript via electron-vite (fast HMR, clean main/renderer split)
+CSS Modules + CSS Custom Properties for styling (not Tailwind -- the bespoke SVG circle, glassmorphism, and glow effects need full creative control)
+Motion (Framer Motion v12) for SVG and layout animations
+Zustand v5 for state management (lightweight, hook-based)
+Tonal.js selectively for interval math/validation; custom data models for producer-level depth
+clsx for class joining, electron-store for persisted preferences
+Visual Design
+Dark theme, music-production aesthetic. Glassmorphism panels, subtle animated glows, chromatic color palette per key.
+
+Layout (3-column CSS Grid)
+┌──────────┬─────────────────────────┬──────────────────┐
+│ SIDEBAR  │   CIRCLE OF 5THS        │ PROGRESSIONS     │
+│ (280px)  │   (flexible center)     │ (320px)          │
+│          │                         │                  │
+│ Key info │   Interactive SVG       │ Genre/mood pills │
+│ 7 chords │   Outer = Major keys    │ Progression list │
+│ Related  │   Inner = Minor keys    │ Complexity filter│
+│ Borrowed │   Center = Selected key │                  │
+│          │                         │ Timeline bar     │
+│          │   Chord detail overlay  │ [I]->[V]->[vi]   │
+└──────────┴─────────────────────────┴──────────────────┘
+Color System
+Backgrounds: #0a0a0f -> #12121a -> #1a1a28 (layered depth)
+Glass: rgba(255,255,255,0.03) bg, 0.08 border, 12px blur
+12 chromatic key colors: Indigo(C) -> Violet(D) -> Fuchsia(E) -> Pink(B) -> Orange(Db) -> Amber(Ab) -> Lime(Eb) -> Cyan(F)
+Functional: Tonic=indigo, Subdominant=cyan, Dominant=orange
+Glow effects on selected/hovered segments
+Theory Depth (Advanced/Producer-Focused)
+Triads through 13th chords, sus, altered chords
+Borrowed chords from parallel modes (modal interchange)
+Secondary dominants, tritone substitutions
+Genre-specific progressions: pop, lo-fi, neo-soul, trap, jazz, gospel, R&B, EDM, blues, funk
+Mood tags: happy, sad, dreamy, dark, ethereal, groovy, etc.
+Jazz voicings (shell, rootless, drop 2) and pop/neo-soul voicings
+80-120 hand-curated progressions with famous song examples
+Project Structure
+circle-of-5ths/
+├── src/
+│   ├── main/              # Electron main process
+│   │   ├── index.ts
+│   │   └── ipc.ts         # Future audio IPC
+│   ├── preload/index.ts   # Secure bridge
+│   └── renderer/          # React app
+│       ├── components/
+│       │   ├── layout/    # AppShell, Sidebar, DetailPanel
+│       │   ├── circle/    # CircleOfFifths, Segment, Ring, Center, Connectors
+│       │   ├── chords/    # ChordGrid, ChordCard, ChordDetail, PianoKeyboard
+│       │   ├── progressions/ # Panel, Card, Timeline, GenreFilter
+│       │   └── shared/    # GlassPanel, Tooltip, Badge
+│       ├── data/          # notes, intervals, chords, scales, keys, progressions, voicings
+│       ├── engine/        # noteUtils, chordBuilder, scaleBuilder, keyAnalyzer, circleGeometry
+│       ├── stores/        # useKeyStore, useChordStore, useProgressionStore, useUIStore
+│       ├── hooks/         # useCircleInteraction, useChordHighlight, useKeyboardShortcuts
+│       ├── styles/        # global.css, theme.css, animations.css, glassmorphism.css
+│       └── types/         # music.ts, ui.ts, geometry.ts
+└── tests/engine/          # Unit tests for music theory logic
+Implementation Phases
+Phase 1: Scaffold & Theme (first)
+npm create @electron-vite with React+TS template
+Define CSS custom properties (full color system, glassmorphism, glow tokens)
+Build AppShell 3-column CSS Grid layout with GlassPanel component
+Set up Zustand stores (useKeyStore, useUIStore)
+Phase 2: Interactive Circle
+circleGeometry.ts -- pure math for arcs, wedge paths, label positions
+CircleSegment as motion.path with hover glow + click selection
+CircleRing (12 segments), CircleOfFifths (outer major + inner minor rings)
+CircleCenter showing selected key name and mode
+Wire to useKeyStore for global state
+Phase 3: Music Theory Engine
+Core types (Note, Chord, ChordType, Key, Progression)
+Data files: notes.ts, intervals.ts, chords.ts, scales.ts
+chordBuilder.ts -- root + quality -> full chord with notes
+keyAnalyzer.ts -- key -> 7 diatonic chords with extensions + borrowed chords
+Unit tests (enharmonic spelling edge cases are critical)
+Phase 4: Sidebar (Key & Chord Display)
+ChordCard (Roman numeral, name, color by function: tonic/subdominant/dominant)
+ChordGrid -- 7 diatonic chords for selected key
+RelatedKeysSection (relative, parallel, neighbor keys)
+BorrowedChordsSection (from parallel minor/modes)
+Cross-highlight: hover chord card -> glow on circle
+Phase 5: Chord Detail View
+PianoKeyboard SVG (2-octave, highlighted notes)
+ChordDetail floating overlay with intervals, notes, quality description
+VoicingSelector tabs (jazz, pop, neo-soul, gospel voicings)
+Motion slide-in/fade animations
+Phase 6: Progression Panel
+Curate 80+ progressions in data/progressions.ts (genre, mood, complexity, examples)
+GenreFilter + MoodFilter pill toggles, ComplexitySlider
+ProgressionCard with badges, ProgressionPanel with filtering
+ProgressionTimeline -- horizontal chord flow visualization
+Click progression -> animated highlight sequence on circle ("Chord Orbit")
+Phase 7: Polish
+CircleConnectors -- animated lines for relationships (tritone subs, secondary dominants)
+Keyboard shortcuts (arrows to navigate circle, numbers for degrees)
+Responsive sidebar collapse, custom Electron title bar
+electron-store for persisting last key, UI state, filter preferences
+Performance audit, animation optimization
+Standout Feature Ideas
+Chord Orbit: Glowing dot orbits the circle through a progression's chords, visualizing harmonic distance
+Tension Map: Color gradient under timeline showing tension/release arc (cool tonic -> hot dominant)
+Common Tones: Piano keyboard highlights shared notes between consecutive chords (voice leading aid)
+Modal Interchange Lens: Toggle overlay showing chords available from Dorian, Mixolydian, Lydian, etc.
+Substitution Suggestions: Click any chord -> see tritone subs, chromatic mediants, diminished passing chords
+Genre Heatmap: Overlay circle with which keys/chords are most common per genre
+Progression DNA: Mini radar chart fingerprint per progression (harmonic range, tension, chromaticism)
+Verification
+npm run dev -- app launches, circle renders, segments are clickable
+Click any key on circle -> sidebar updates with correct diatonic chords and Roman numerals
+Hover chord card -> corresponding circle segment glows
+Filter progressions by genre/mood -> list updates, click one -> timeline shows chord flow
+Chord detail view shows correct notes, intervals, and piano visualization
+Run npm test -- all music theory engine unit tests pass
+Window resize -> layout adapts, sidebars collapse gracefully

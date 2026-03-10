@@ -1,0 +1,21 @@
+.segment {
+  cursor: pointer;
+}
+
+.segmentPath {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 0.5;
+  transition: stroke var(--transition-fast);
+}
+
+.segmentPath:hover {
+  stroke: rgba(255, 255, 255, 0.2);
+}
+
+.label {
+  fill: var(--text-primary);
+  font-family: var(--font-sans);
+  pointer-events: none;
+  transition: all var(--transition-fast);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
