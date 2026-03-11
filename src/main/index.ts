@@ -8,6 +8,7 @@ function createWindow(): void {
     minWidth: 900,
     minHeight: 600,
     show: false,
+    icon: join(__dirname, '../../resources/icon.png'),
     backgroundColor: '#0a0a0f',
     titleBarStyle: 'hidden',
     titleBarOverlay: {

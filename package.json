@@ -48,6 +48,14 @@
         }
       ]
     },
+    "mac": {
+      "icon": "resources/icon.icns",
+      "target": ["dmg"]
+    },
+    "linux": {
+      "icon": "resources/linux",
+      "target": ["AppImage"]
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
