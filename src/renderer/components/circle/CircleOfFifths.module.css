@@ -30,3 +30,19 @@
     max-height: 460px;
   }
 }
+
+@media (max-width: 960px) {
+  .container {
+    width: min(100%, 50vw, 400px);
+    max-width: 400px;
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: min(100%, 80vw, 320px);
+    max-width: 320px;
+    max-height: 320px;
+  }
+}

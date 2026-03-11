@@ -274,4 +274,34 @@
   .chordChip {
     min-width: calc(33.333% - 3px);
   }
+
+  .panel {
+    height: auto;
+  }
+
+  .list {
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chordChip {
+    min-width: calc(50% - 2px);
+    padding: 12px 14px;
+  }
+
+  .previewBtn {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .randomBtn,
+  .clearBtn {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .featuredCard {
+    padding: var(--space-sm);
+  }
 }

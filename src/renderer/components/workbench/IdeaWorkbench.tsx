@@ -86,6 +86,29 @@ export function IdeaWorkbench() {
     document.addEventListener('mouseup', handleUp)
   }, [pianoHeight])
 
+  const handleTouchResizeStart = useCallback((e: React.TouchEvent) => {
+    e.preventDefault()
+    const touch = e.touches[0]
+    dragRef.current = { startY: touch.clientY, startHeight: pianoHeight }
+
+    const handleMove = (ev: TouchEvent) => {
+      if (!dragRef.current) return
+      const t = ev.touches[0]
+      const delta = dragRef.current.startY - t.clientY
+      const next = Math.min(MAX_PIANO_HEIGHT, Math.max(MIN_PIANO_HEIGHT, dragRef.current.startHeight + delta))
+      setPianoHeight(next)
+    }
+
+    const handleEnd = () => {
+      dragRef.current = null
+      document.removeEventListener('touchmove', handleMove)
+      document.removeEventListener('touchend', handleEnd)
+    }
+
+    document.addEventListener('touchmove', handleMove, { passive: false })
+    document.addEventListener('touchend', handleEnd)
+  }, [pianoHeight])
+
   const ideas = useMemo(
     () => getProductionIdeas(selectedRoot, selectedMode),
     [selectedMode, selectedRoot]
@@ -248,7 +271,7 @@ export function IdeaWorkbench() {
           style={pianoRollFocusMode ? undefined : { height: pianoHeight }}
         >
           {!pianoRollFocusMode && (
-            <div className={styles.resizeHandle} onMouseDown={handleResizeStart}>
+            <div className={styles.resizeHandle} onMouseDown={handleResizeStart} onTouchStart={handleTouchResizeStart}>
               <div className={styles.resizeHandleBar} />
             </div>
           )}

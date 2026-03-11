@@ -297,3 +297,62 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 960px) {
+  .workbench {
+    overflow: visible;
+    height: auto;
+  }
+
+  .circleCard {
+    padding: var(--space-md);
+    min-height: auto;
+  }
+
+  .pianoSection {
+    max-height: 250px;
+  }
+
+  .resizeHandle {
+    height: 32px;
+    touch-action: none;
+  }
+
+  .resizeHandleBar {
+    width: 48px;
+    height: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .workbench {
+    gap: var(--space-md);
+  }
+
+  .circleCard {
+    padding: var(--space-sm);
+    border-radius: var(--radius-lg);
+  }
+
+  .circleWrap {
+    gap: var(--space-md);
+  }
+
+  .rollToggle,
+  .focusToggle {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .infoCard {
+    padding: var(--space-sm);
+  }
+
+  .pianoSection {
+    max-height: 200px;
+  }
+
+  .resizeHandle {
+    height: 44px;
+  }
+}
