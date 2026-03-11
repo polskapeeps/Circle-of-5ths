@@ -13,6 +13,7 @@
     "dist:win": "npm run build && electron-builder --win nsis portable",
     "preview": "electron-vite preview",
     "start": "electron-vite build && electron .",
+    "build:web": "vite build --config vite.config.ts",
     "test": "vitest"
   },
   "build": {
