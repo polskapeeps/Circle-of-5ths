@@ -3,11 +3,13 @@ import { useIdeaStore } from '../../stores/useIdeaStore'
 import { useKeyStore } from '../../stores/useKeyStore'
 import { useProgressionStore } from '../../stores/useProgressionStore'
 import { useChordStore } from '../../stores/useChordStore'
+import { useBuilderStore } from '../../stores/useBuilderStore'
 import { Badge } from '../shared/Badge'
 import { ProgressionCard } from './ProgressionCard'
 import { getResolvedProgressions, getScaleFormula } from '../../engine/recommendationEngine'
 import { analyzeKey, getKeyDisplayName } from '../../engine/keyAnalyzer'
 import { chordToString } from '../../engine/chordBuilder'
+import { generateRandomProgression } from '../../engine/generativeEngine'
 import type { Genre, Mood } from '../../types/music'
 import styles from './ProgressionPanel.module.css'
 
@@ -93,6 +95,8 @@ export function ProgressionPanel() {
 
   const displayName = getKeyDisplayName(selectedRoot, selectedMode)
 
+  const loadProgression = useBuilderStore((state) => state.loadProgression)
+
   function handleRandomize() {
     if (filtered.length === 0) return
 
@@ -106,6 +110,15 @@ export function ProgressionPanel() {
     setSelectedIdea(null)
     setSelectedChord(null)
     setSelectedProgression(next.progression.id)
+    loadProgression(next.chords)
+  }
+
+  function handleGenerateRandom() {
+    const steps = generateRandomProgression(selectedRoot, selectedMode, 4, {
+      constrainToScale: true,
+      chordCategories: ['triad', 'seventh'],
+    })
+    loadProgression(steps)
   }
 
   return (
@@ -128,7 +141,10 @@ export function ProgressionPanel() {
         </p>
         <div className={styles.actionRow}>
           <button className={styles.randomBtn} onClick={handleRandomize} disabled={filtered.length === 0}>
-            Randomize Progression
+            Randomize Curated
+          </button>
+          <button className={styles.randomBtn} onClick={handleGenerateRandom}>
+            Generate Random
           </button>
           <span className={styles.selectionMeta}>
             {selectedNotes.length > 0 ? `${selectedNotes.length} locked note${selectedNotes.length > 1 ? 's' : ''}` : 'No note locks'}
@@ -243,9 +259,10 @@ export function ProgressionPanel() {
                 setSelectedIdea(null)
                 setSelectedChord(null)
                 setSelectedProgression(featuredProgression.progression.id)
+                loadProgression(featuredProgression.chords)
               }}
             >
-              Preview
+              Load
             </button>
           </div>
           <span className={styles.featuredLine}>
@@ -274,6 +291,7 @@ export function ProgressionPanel() {
               setSelectedProgression(
                 selectedProgressionId === progression.progression.id ? null : progression.progression.id
               )
+              loadProgression(progression.chords)
             }}
           />
         ))}

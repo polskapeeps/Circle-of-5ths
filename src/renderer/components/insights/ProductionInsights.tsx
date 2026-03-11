@@ -4,6 +4,7 @@ import { useChordStore } from '../../stores/useChordStore'
 import { useIdeaStore } from '../../stores/useIdeaStore'
 import { useKeyStore } from '../../stores/useKeyStore'
 import { useProgressionStore } from '../../stores/useProgressionStore'
+import { useBuilderStore } from '../../stores/useBuilderStore'
 import { getProductionIdeas, getScaleFormula } from '../../engine/recommendationEngine'
 import { sequenceToChordNames } from '../../engine/progressionResolver'
 import styles from './ProductionInsights.module.css'
@@ -15,6 +16,7 @@ export function ProductionInsights() {
   const setSelectedIdea = useIdeaStore((state) => state.setSelectedIdea)
   const setSelectedProgression = useProgressionStore((state) => state.setSelectedProgression)
   const setSelectedChord = useChordStore((state) => state.setSelectedChord)
+  const loadProgression = useBuilderStore((state) => state.loadProgression)
 
   const scaleNotes = useMemo(
     () => getScaleFormula(selectedRoot, selectedMode),
@@ -56,6 +58,7 @@ export function ProductionInsights() {
                 setSelectedProgression(null)
                 setSelectedChord(null)
                 setSelectedIdea(selected ? null : idea.id)
+                if (!selected) loadProgression(idea.chords)
               }}
             >
               <div className={styles.ideaHeader}>

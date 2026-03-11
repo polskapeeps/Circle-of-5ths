@@ -1,0 +1,187 @@
+.strip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: calc(var(--radius-lg) + 4px);
+  background:
+    radial-gradient(circle at bottom left, rgba(129, 140, 248, 0.08), transparent 40%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.controlBtn {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.controlBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+}
+
+.primaryBtn {
+  composes: controlBtn;
+  background: rgba(129, 140, 248, 0.15);
+  border-color: rgba(129, 140, 248, 0.25);
+  color: var(--text-primary);
+}
+
+.primaryBtn:hover {
+  background: rgba(129, 140, 248, 0.25);
+  border-color: rgba(129, 140, 248, 0.35);
+}
+
+.chromaticToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.chromaticToggle[data-active='true'] {
+  background: rgba(34, 211, 238, 0.12);
+  border-color: rgba(34, 211, 238, 0.25);
+  color: var(--text-primary);
+}
+
+.chromaticDot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  opacity: 0.5;
+}
+
+.chromaticToggle[data-active='true'] .chromaticDot {
+  opacity: 1;
+  background: rgb(34, 211, 238);
+}
+
+.slotRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: var(--space-xs) 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.slotRow::-webkit-scrollbar {
+  height: 4px;
+}
+
+.slotRow::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.addSlotBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  min-width: 48px;
+  height: 80px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.addSlotBtn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-secondary);
+}
+
+.randomNoteDisplay {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.randomNoteLabel {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.randomNotePill {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(34, 211, 238, 0.15);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.slotWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .strip {
+    padding: var(--space-sm);
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .addSlotBtn {
+    width: 40px;
+    min-width: 40px;
+    height: 68px;
+  }
+}

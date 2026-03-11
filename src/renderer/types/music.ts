@@ -131,3 +131,16 @@ export interface ProductionIdea {
   tags: string[]
   chords: ResolvedChordStep[]
 }
+
+export interface BuilderSlot {
+  id: string
+  chord: ResolvedChordStep | null
+  locked: boolean
+  source: 'manual' | 'random' | 'curated'
+}
+
+export interface RandomOptions {
+  constrainToScale: boolean
+  chordCategories: ChordCategory[]
+  allowedDegrees?: number[]
+}

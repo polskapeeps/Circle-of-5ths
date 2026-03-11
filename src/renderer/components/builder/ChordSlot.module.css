@@ -1,0 +1,144 @@
+.slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 96px;
+  min-width: 80px;
+  height: 80px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.slot:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.slot[data-filled='true'] {
+  background: rgba(129, 140, 248, 0.08);
+  border-color: rgba(129, 140, 248, 0.2);
+}
+
+.slot[data-filled='true']:hover {
+  background: rgba(129, 140, 248, 0.14);
+  border-color: rgba(129, 140, 248, 0.3);
+}
+
+.slot[data-locked='true'] {
+  border-color: rgba(251, 191, 36, 0.4);
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.1);
+}
+
+.emptyLabel {
+  font-size: 20px;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.emptyHint {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.chordName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.numeral {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.actions {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.slot:hover .actions {
+  opacity: 1;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: rgba(30, 30, 40, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.actionBtn:hover {
+  background: rgba(50, 50, 60, 0.95);
+  color: var(--text-primary);
+}
+
+.lockBtn {
+  composes: actionBtn;
+}
+
+.lockBtn[data-active='true'] {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.4);
+  color: rgb(251, 191, 36);
+}
+
+.randomBtn {
+  composes: actionBtn;
+}
+
+.randomBtn:hover {
+  background: rgba(129, 140, 248, 0.3);
+  color: var(--text-primary);
+}
+
+.removeBtn {
+  composes: actionBtn;
+}
+
+.removeBtn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: rgb(239, 68, 68);
+}
+
+@media (max-width: 480px) {
+  .slot {
+    width: 72px;
+    min-width: 64px;
+    height: 68px;
+  }
+
+  .chordName {
+    font-size: 12px;
+  }
+
+  .actions {
+    opacity: 1;
+  }
+}
